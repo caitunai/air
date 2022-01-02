@@ -10,6 +10,7 @@ import (
 
 func (e *Engine) killCmd(cmd *exec.Cmd) (pid int, err error) {
 	pid = cmd.Process.Pid
+	exec.Command("/bin/kill", pid)
 
 	if e.config.Build.SendInterrupt {
 		// Sending a signal to make it clear to the process that it is time to turn off
