@@ -6,18 +6,21 @@ import (
 	"os/exec"
 	"syscall"
 	"time"
+	"fmt"
 )
 
 func (e *Engine) killCmd(cmd *exec.Cmd) (pid int, err error) {
 	pid = cmd.Process.Pid
-	exec.Command("/bin/kill", pid)
 
 	if e.config.Build.SendInterrupt {
+		exec.Command("/bin/kill", "-INT", fmt.Sprintf("%d", pid))
 		// Sending a signal to make it clear to the process that it is time to turn off
 		if err = syscall.Kill(-pid, syscall.SIGINT); err != nil {
 			return
 		}
 		time.Sleep(e.config.Build.KillDelay * time.Millisecond)
+	} else {
+		exec.Command("/bin/kill", fmt.Sprintf("%d", pid))
 	}
 
 	// https://groups.google.com/g/golang-nuts/c/XoQ3RhFBJl8
